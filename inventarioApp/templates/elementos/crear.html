@@ -1,0 +1,23 @@
+{% extends "base.html"%}
+{% block titulo%} Agregar nuevo elemento {%endblock%}
+{% block contenido %}
+
+
+<div class="card">
+    <div class="card-header">
+        Crear un elemento
+    </div>
+    <div class="card-body">
+        <h4 class="card-title">Datos de elemento</h4>
+     {% include 'elementos/form.html'%}
+
+
+    </div>
+    <div class="card-footer text-muted">
+        
+    </div>
+</div>
+
+
+
+{%endblock%}

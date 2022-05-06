@@ -1,0 +1,44 @@
+{% extends "base.html"%}
+{% block titulo%} Lista de libros {%endblock%}
+
+{% block contenido %} 
+ <div class="card">
+     <div class="card-header">
+         <a name="" id="" class="btn btn-warning" href="{% url 'crear' %}" role="button">Agregar nuevo elemento</a>
+     </div>
+     <div class="card-body">
+         <h4 class="card-title">Elementos</h4>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Descripción</th>
+                    <th>Fecha de entrada</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1</td>
+                    <td>Camisa</td>
+                    <td>camisa negra</td>
+                    <td>Fecha de entrada</td>
+                    <td><a name="" id="" class="btn btn-info" href="{% url 'editar'%}" role="button">Editar</a>| 
+                        <a name="" id="" class="btn btn-info" href="#" role="button">Borrar</a></td>
+
+                </tr>
+                
+            </tbody>
+        </table>
+        
+
+
+
+
+
+     </div>
+     <div class="card-footer text-muted">
+     </div>
+ </div>
+{%endblock%}
