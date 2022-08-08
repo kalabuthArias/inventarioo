@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -23,16 +24,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-(hwj#mml!i_2!8pzv4i)+jg7zio3-y9r(3$o*%*l1#nwo9o6$n'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
 
 INSTALLED_APPS = [
 
-    
+ 
     'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -40,14 +41,22 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'import_export',
+    'django_filters',
+    'rangefilter',
     'inventarioApp',
-    
-    
+    'ArcoIris',
+    'VillaAdriana',
+    'VillaBlanca',
+    'Proveedor',
+    'report',
+    'VillaJimena',
 ]
 
 
 
 MIDDLEWARE = [
+    
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -55,6 +64,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware'
 ]
 
 ROOT_URLCONF = 'Inventario.urls'
@@ -62,10 +72,11 @@ ROOT_URLCONF = 'Inventario.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS':['templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
+             
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
@@ -84,7 +95,7 @@ WSGI_APPLICATION = 'Inventario.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME':'inventarioApp',
+        'NAME':'inventarioAppp',
         'USER': 'root',
         'PASSWORD': '',
         'HOST': 'localhost',
@@ -118,7 +129,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'es-es'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Bogota'
 
 USE_I18N = True
 
@@ -128,26 +139,61 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
+
+STATIC_ROOT= os.path.join(BASE_DIR,'staticfiles')
+STATIC_TMP= os.path.join(BASE_DIR,BASE_DIR,'static')
 STATIC_URL = 'static/'
 
+os.makedirs(STATIC_TMP,exist_ok=True)
+os.makedirs(STATIC_ROOT,exist_ok=True)
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static"),
+]
+STATICFILES_DIRS=[
+    BASE_DIR / "static",
+]
+
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 JAZZMIN_SETTINGS = {
+
+
+    'navigation_expanded': False,
+    "changeform_format": "single",
     # title of the window (Will default to current_admin_site.site_title if absent or None)
-    "site_title": "Fundación Crecer",
+    "site_title": "Asociación Crecer",
 
     # Title on the login screen (19 chars max) (defaults to current_admin_site.site_header if absent or None)
-    "site_header": "Fundación crecer",
+    "site_header": "Asociación crecer",
     "site_brand": "Inventario",
     "show_ui_builder": True,
-"login_logo_dark": True,
-     "site_logo": "/img/crecer.png",
-      "welcome_sign": "Bienvenidos al Inventario de Fundación crecer",
-        "copyright": "Fundación crecer",
-        "login_logo_dark": True,
-        "site_icon": "/img/crecer.png",
-         
+    "login_logo_dark": True,
+    "site_logo": "/img/crecer.png",
+    "welcome_sign": "Bienvenidos al Inventario de la Asociación crecer",
+    "copyright": "Asociación crecer",
+    "login_logo_dark": True,
+    "site_icon": "/img/crecer.png",
 
+        "topmenu_links": [
+
+        # Url that gets reversed (Permissions can be added)
+        {"name": "Panel",  "url": "admin:index", "permissions": ["auth.view_user"]},
+
+        # external url that opens in a new window (Permissions can be added)
+        {"name": "Inicio", "url": "http://127.0.0.1:8000/", "new_window": True},
+
+        # model admin to link to (Permissions checked against model)
+        {"model": "auth.User"},
+
+        # App with dropdown menu to all its models pages (Permissions checked against models)
+        {"app": "books"},
+    ],
+   
+    
+    
 }
+RA_SITE_TITLE = 'Asociación Crecer'
 
 JAZZMIN_UI_TWEAKS = {
     "navbar_small_text": False,
@@ -163,11 +209,11 @@ JAZZMIN_UI_TWEAKS = {
     "footer_fixed": False,
     "sidebar_fixed": False,
     "sidebar": "sidebar-light-orange",
-    "sidebar_nav_small_text": False,
+    "sidebar_nav_small_text": True,
     "sidebar_disable_expand": False,
     "sidebar_nav_child_indent": False,
     "sidebar_nav_compact_style": False,
-    "sidebar_nav_legacy_style": False,
+    "sidebar_nav_legacy_style": True,
     "sidebar_nav_flat_style": False,
     "theme": "default",
     "dark_mode_theme": None,
@@ -178,10 +224,9 @@ JAZZMIN_UI_TWEAKS = {
         "warning": "btn-outline-warning",
         "danger": "btn-outline-danger",
         "success": "btn-outline-success"
-    }
+    },
+    "actions_sticky_top": False
 }
-
-
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
