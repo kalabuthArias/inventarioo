@@ -43,6 +43,7 @@ class PacienteAdmin(ImportExportModelAdmin,admin.ModelAdmin):
    search_fields= ('id', 'PrimerApellido','SegundoApellido','FechaNacimiento','TipoDocumento','NumeroDocumento','tallaPrenda','tallaCalzado','tallaCalzado')
    list_filter=['modalidad', 'genero', 'TipoDocumento',]
    list_display_links=('PrimerApellido',)
+   list_editable=( 'FechaEgreso','FechaNacimiento','FechaIngreso',)
 
 #________________________________________________________________________________________________
    class  ElementoResource(resources.ModelResource):
@@ -110,6 +111,7 @@ class ElementoCreationFormPersonal(forms.ModelForm):
             raise forms.ValidationError(app_messages.STOCK_MUST_BE_POSITIVE)
         return stock
 
+
      def save(self, commit=True):
         ElementoArcoirisPersonal = super(ElementoCreationFormPersonal, self).save(commit=False)
         if commit:
@@ -150,7 +152,7 @@ class ElementoAdminAseo(ImportExportModelAdmin,admin.ModelAdmin):
 class ElementoAdminPersonal(ImportExportModelAdmin,admin.ModelAdmin):
     
      form=ElementoCreationFormPersonal
-     list_display= ('id','nombreElemento','talla','fechaElemento','stock',)
+     list_display= ('id','nombreElemento','talla','fechaElemento','fecha_vencimiento','stock',)
      search_fields=('id','nombreElemento','talla')
      list_display_links=('nombreElemento',)
 
@@ -294,6 +296,7 @@ class PedidoProveedorAdminAseo(admin.ModelAdmin):
     list_filter = ('fecha_pedido','fecha_solicitud' )
     search_fields = ['fecha_pedido','fecha_solicitud', 'proveedor__nombre']
     list_display_links=['proveedor']
+  
 
     inlines = [DetallePedidoProveedorInlineAseo]
     
@@ -497,6 +500,10 @@ class DetalleSalidaDotaciónPersonalInline(admin.TabularInline):
     extra = 1
     min_num = 1
     show_change_link = False
+
+
+
+
 ##ADMIN
 class SalidaDotaciónPersonalAdmin(admin.ModelAdmin):
     fields = ['solicitado_por','unidad','fecha']
@@ -505,6 +512,20 @@ class SalidaDotaciónPersonalAdmin(admin.ModelAdmin):
     list_display = ['id','solicitado_por', 'unidad','fecha']
     inlines = [DetalleSalidaDotaciónPersonalInline]
     actions = ['generar_pdf','generar_pdf_2']
+
+
+    def clean_usuarios(self):
+        user = self.cleaned_data.get("producto")
+        if user == user:
+            raise forms.ValidationError(app_messages.USER_MUST_BE)
+        return user
+
+    def clean_producto(self):
+        producto = self.cleaned_data.get("usuario")
+        if producto == producto:
+            raise forms.ValidationError(app_messages.PRODUCTO_MUST_BE)
+        return producto
+
 
     def save_formset(self, request, form, formset, change):
         instances = formset.save(commit=False)

@@ -2,6 +2,8 @@
 DATE_MUST_BE_GREATER = "La fecha debe ser mayor a la actual"
 PRICE_MUST_BE_POSITIVE = "El precio debe ser mayor a 0"
 STOCK_MUST_BE_POSITIVE = "El stock debe ser mayor a 0"
+USER_MUST_BE = "Solo se puede agregar un usuario a la vez, si desea agregar otro usuario primero guarde"
+PRODUCTO_MUST_BE = "No se pueden repetir los productos, primero guarde y ya se podrá"
 
 # Cliente
 NAME_MUST_BE_VALID = "Ingrese un nombre válido"

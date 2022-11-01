@@ -120,7 +120,7 @@ class ElementoCreationFormPersonal(forms.ModelForm):
 class ElementoAdmin(ImportExportModelAdmin,admin.ModelAdmin):
      form=ElementoCreationForm
      
-     list_display= ('id','nombreElemento','fecha_vencimiento','stock',)
+     list_display= ('id','nombreElemento','fechaElemento','fecha_vencimiento','stock')
      search_fields=('id','nombreElemento')
      list_display_links=('nombreElemento',)
 
@@ -137,7 +137,7 @@ class ElementoAdmin(ImportExportModelAdmin,admin.ModelAdmin):
 
 class ElementoAdminAseo(ImportExportModelAdmin,admin.ModelAdmin):
      form=ElementoCreationFormAseo
-     list_display= ('id','nombreElemento','fechaElemento','stock','fecha_vencimiento')
+     list_display= ('id','nombreElemento','fechaElemento','fecha_vencimiento','stock')
      search_fields=('id','nombreElemento')
      list_display_links=('nombreElemento',)
 
@@ -151,7 +151,7 @@ class ElementoAdminAseo(ImportExportModelAdmin,admin.ModelAdmin):
 class ElementoAdminPersonal(ImportExportModelAdmin,admin.ModelAdmin):
     
      form=ElementoCreationFormPersonal
-     list_display= ('id','nombreElemento','talla','fechaElemento','stock',)
+     list_display= ('id','nombreElemento','talla','fechaElemento','fecha_vencimiento','stock',)
      search_fields=('id','nombreElemento','talla')
      list_display_links=('nombreElemento',)
 
