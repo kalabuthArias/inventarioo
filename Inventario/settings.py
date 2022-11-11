@@ -95,13 +95,13 @@ WSGI_APPLICATION = 'Inventario.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME':'inventarioAppp',
-        'USER': 'root',
-        'PASSWORD': '',
-        'HOST': 'localhost',
-        'PORT':'3306',
-
+        'NAME':  os.environ.get('BIA_DB_NAME'),
+        'USER': os.environ.get('BIA_DB_USER'),
+        'PASSWORD': os.environ.get('BIA_DB_PASSWORD'),
+        'HOST': os.environ.get('BIA_DB_HOST'),
+        'PORT':  os.environ.get('BIA_DB_PORT'),
     }
+    
 }
 
 
