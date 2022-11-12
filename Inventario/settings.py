@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-(hwj#mml!i_2!8pzv4i)+jg7zio3-y9r(3$o*%*l1#nwo9o6$n
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["web-production-4251.up.railway.app"]
+ALLOWED_HOSTS = ["web-production-4251.up.railway.app",'127.0.0.1', 'localhost',]
 
 
 # Application definition
@@ -95,11 +95,11 @@ WSGI_APPLICATION = 'Inventario.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME':  os.environ.get('INVENTARIO_DB_NAME'),
-        'USER': os.environ.get('INVENTARIO_DB_USER'),
-        'PASSWORD': os.environ.get('INVENTARIO_DB_PASSWORD'),
-        'HOST': os.environ.get('INVENTARIO_DB_HOST'),
-        'PORT':  os.environ.get('INVENTARIO_DB_PORT'),
+        'NAME':  'inventarioo',
+        'USER': 'root',
+        'PASSWORD':'',
+        'HOST': 'localhost',
+        'PORT':  3306,
     }
     
 }
