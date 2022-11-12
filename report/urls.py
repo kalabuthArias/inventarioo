@@ -12,14 +12,13 @@ urlpatterns=[
     path('edit/<str:report_type>/', edit, name='report_edit'),
     path('run/',run, name='report_run'),
     path('save/<str:report_type>/',save,name='report_save'),
-    path('exportArcoIris/(?P<pedido_id>[-_:\w\d]+)',exportUsersPDF,name='exportArcoIris'),
-    path('exportEntregaArcoIris/(?P<pedido_id>[-_:\w\d]+)',exportEntregaPDF,name='exportEntregaArcoIris'),
-    path('exportVillaAdriana/(?P<pedido_id>[-_:\w\d]+)',exportUsersPDFF,name='exportVillaAdriana'),
-    path('exportEntregaAdriana/(?P<pedido_id>[-_:\w\d]+)',exportEntregaPDFF,name='exportEntregaVillaAdriana'),
-    path('exportVillaBlanca/(?P<pedido_id>[-_:\w\d]+)',exportUsersPDFFF,name='exportVillaBlanca'),
-    path('exportEntregaBlanca/(?P<pedido_id>[-_:\w\d]+)',exportEntregaPDFFF,name='exportEntregaVillaBlanca'),
-    path('exportVillaJimena/(?P<pedido_id>[-_:\w\d]+)',exportUsersPDFFFF,name='exportVillaJimena'),
-    path('exportEntregaJimena/(?P<pedido_id>[-_:\w\d]+)',exportEntregaPDFFFF,name='exportEntregaVillaJimena')
+    path('exportArcoIris/<str:pedido_id>/)',exportUsersPDF,name='exportArcoIris'),
+    path('exportEntregaArcoIris/<str:pedido_id>/)',exportEntregaPDF,name='exportEntregaArcoIris'),
+    path('exportVillaAdriana/<str:pedido_id>/)',exportUsersPDFF,name='exportVillaAdriana'),
+    path('exportEntregaAdriana/<str:pedido_id>/)',exportEntregaPDFF,name='exportEntregaVillaAdriana'),
+    path('exportVillaBlanca/<str:pedido_id>/)',exportUsersPDFFF,name='exportVillaBlanca'),
+    path('exportEntregaBlanca/<str:pedido_id>/)',exportEntregaPDFFF,name='exportEntregaVillaBlanca'),
+    path('exportVillaJimena/<str:pedido_id>/)',exportUsersPDFFFF,name='exportVillaJimena'),
+    path('exportEntregaJimena/<str:pedido_id>/)',exportEntregaPDFFFF,name='exportEntregaVillaJimena')
     ]
-        
     

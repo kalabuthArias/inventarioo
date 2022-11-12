@@ -120,14 +120,10 @@ class ElementoCreationFormPersonal(forms.ModelForm):
 class ElementoAdmin(ImportExportModelAdmin,admin.ModelAdmin):
      form=ElementoCreationForm
      
-     list_display= ('id','nombreElemento','fechaElemento','fecha_vencimiento','stock')
+     list_display= ('id','nombreElemento','fecha_vencimiento','stock')
      search_fields=('id','nombreElemento')
-     list_display_links=('nombreElemento',)
-
-    
-
-     
-
+     list_filter = ('nombreElemento','fecha_vencimiento' )
+     list_display_links=['nombreElemento']
 #____________________________________________________________________________________________
 
 
@@ -137,9 +133,10 @@ class ElementoAdmin(ImportExportModelAdmin,admin.ModelAdmin):
 
 class ElementoAdminAseo(ImportExportModelAdmin,admin.ModelAdmin):
      form=ElementoCreationFormAseo
-     list_display= ('id','nombreElemento','fechaElemento','fecha_vencimiento','stock')
+     list_display= ('id','nombreElemento','fechaElemento','stock','fecha_vencimiento')
      search_fields=('id','nombreElemento')
-     list_display_links=('nombreElemento',)
+     list_filter = ('nombreElemento','fecha_vencimiento' )
+     list_display_links=['nombreElemento']
 
 
 #____________________________________________________________________________________________
@@ -151,9 +148,10 @@ class ElementoAdminAseo(ImportExportModelAdmin,admin.ModelAdmin):
 class ElementoAdminPersonal(ImportExportModelAdmin,admin.ModelAdmin):
     
      form=ElementoCreationFormPersonal
-     list_display= ('id','nombreElemento','talla','fechaElemento','fecha_vencimiento','stock',)
+     list_display= ('id','nombreElemento','talla','fechaElemento','stock',)
      search_fields=('id','nombreElemento','talla')
-     list_display_links=('nombreElemento',)
+     list_filter = ('talla','nombreElemento','fecha_vencimiento' )
+     list_display_links=['nombreElemento']
 
 
 #_____________________________________________________________________
@@ -232,7 +230,7 @@ class PedidoProveedorFormPersonal(forms.ModelForm):
 
 #_________________________________________________________________________
 
-class PedidoProveedorAdmin(admin.ModelAdmin):
+class PedidoProveedorAdmin(ImportExportModelAdmin,admin.ModelAdmin):
     form = PedidoProveedorForm
    
     
@@ -283,7 +281,7 @@ class PedidoProveedorAdmin(admin.ModelAdmin):
             instance.save()
         formset.save_m2m()
 
-class PedidoProveedorAdminAseo(admin.ModelAdmin):
+class PedidoProveedorAdminAseo(ImportExportModelAdmin,admin.ModelAdmin):
     form = PedidoProveedorFormAseo
    
     fields = ['proveedor','solicitadoo','solicitado','recibido','entregado','fecha_solicitud']
@@ -334,7 +332,7 @@ class PedidoProveedorAdminAseo(admin.ModelAdmin):
             instance.save()
         formset.save_m2m()
 
-class PedidoProveedorAdminPersonal(admin.ModelAdmin):
+class PedidoProveedorAdminPersonal(ImportExportModelAdmin, admin.ModelAdmin):
     form = PedidoProveedorFormPersonal
    
     
@@ -413,7 +411,7 @@ class DetalleDevolucionPedidoProveedorInlinePersonal(admin.TabularInline):
     show_change_link = False
 
 
-class DevolucionPedidoProveedorAdmin(admin.ModelAdmin):
+class DevolucionPedidoProveedorAdmin(ImportExportModelAdmin,admin.ModelAdmin):
     fields = ['proveedor', 'detalle']
     list_filter = ['fecha_devolucion']
     search_fields = ['proveedor__nombre']
@@ -422,56 +420,7 @@ class DevolucionPedidoProveedorAdmin(admin.ModelAdmin):
 
     def save_formset(self, request, form, formset, change):
         instances = formset.save(commit=False)
-        for obj in formset.deleted_objects:
-            if obj.cantidad_devuelta is None:
-                obj.cantidad_devuelta = 0
-            producto = obj.producto
-            producto.stock += obj.cantidad_devuelta
-            producto.save()
-            obj.delete()
-        for instance in instances:
-            if instance.cantidad_devuelta is None:
-                instance.cantidad_devuelta = 0
-            producto = instance.producto
-            producto.stock -= instance.cantidad_devuelta
-            producto.save()
-            instance.save()
-        formset.save_m2m()
-
-class DevolucionPedidoProveedorAdminAseo(admin.ModelAdmin):
-    fields = ['proveedor', 'detalle']
-    list_filter = ['fecha_devolucion']
-    search_fields = ['proveedor__nombre']
-    list_display = ['id','proveedor', 'fecha_devolucion', 'detalle']
-    inlines = [DetalleDevolucionPedidoProveedorInlineAseo]
-
-    def save_formset(self, request, form, formset, change):
-        instances = formset.save(commit=False)
-        for obj in formset.deleted_objects:
-            if obj.cantidad_devuelta is None:
-                obj.cantidad_devuelta = 0
-            producto = obj.producto
-            producto.stock += obj.cantidad_devuelta
-            producto.save()
-            obj.delete()
-        for instance in instances:
-            if instance.cantidad_devuelta is None:
-                instance.cantidad_devuelta = 0
-            producto = instance.producto
-            producto.stock -= instance.cantidad_devuelta
-            producto.save()
-            instance.save()
-        formset.save_m2m()
-
-class DevolucionPedidoProveedorAdminPersonal(admin.ModelAdmin):
-    fields = ['proveedor', 'detalle']
-    list_filter = ['fecha_devolucion']
-    search_fields = ['proveedor__nombre']
-    list_display = ['id','proveedor', 'fecha_devolucion', 'detalle']
-    inlines = [DetalleDevolucionPedidoProveedorInlinePersonal]
-
-    def save_formset(self, request, form, formset, change):
-        instances = formset.save(commit=False)
+        stocks = {}
         for obj in formset.deleted_objects:
             if obj.cantidad_devuelta  is None:
                 obj.cantidad_devuelta  = 0
@@ -480,10 +429,83 @@ class DevolucionPedidoProveedorAdminPersonal(admin.ModelAdmin):
             producto.save()
             obj.delete()
         for instance in instances:
-            if instance.cantidad_devuelta  is None:
-                instance.cantidad_devuelta  = 0
+            if instance.cantidad_devuelta is None:
+                instance.cantidad_devuelta = 0
             producto = instance.producto
-            producto.stock -= instance.cantidad_devuelta
+            stock_actual = stocks.get(producto)
+            if stock_actual:
+                stocks[producto] -= instance.cantidad_devuelta
+                producto.stock = stocks[producto]
+            else:
+                stocks[producto] = producto.stock
+                stocks[producto] -= instance.cantidad_devuelta
+                producto.stock = stocks[producto]
+            producto.save()
+            instance.save()
+        formset.save_m2m()
+
+class DevolucionPedidoProveedorAdminAseo(ImportExportModelAdmin, admin.ModelAdmin):
+    fields = ['proveedor', 'detalle']
+    list_filter = ['fecha_devolucion']
+    search_fields = ['proveedor__nombre']
+    list_display = ['id','proveedor', 'fecha_devolucion', 'detalle']
+    inlines = [DetalleDevolucionPedidoProveedorInlineAseo]
+
+    def save_formset(self, request, form, formset, change):
+        instances = formset.save(commit=False)
+        stocks = {}
+        for obj in formset.deleted_objects:
+            if obj.cantidad_devuelta  is None:
+                obj.cantidad_devuelta  = 0
+            producto = obj.producto
+            producto.stock += obj.cantidad_devuelta 
+            producto.save()
+            obj.delete()
+        for instance in instances:
+            if instance.cantidad_devuelta is None:
+                instance.cantidad_devuelta = 0
+            producto = instance.producto
+            stock_actual = stocks.get(producto)
+            if stock_actual:
+                stocks[producto] -= instance.cantidad_devuelta
+                producto.stock = stocks[producto]
+            else:
+                stocks[producto] = producto.stock
+                stocks[producto] -= instance.cantidad_devuelta
+                producto.stock = stocks[producto]
+            producto.save()
+            instance.save()
+        formset.save_m2m()
+
+class DevolucionPedidoProveedorAdminPersonal(ImportExportModelAdmin, admin.ModelAdmin):
+    fields = ['proveedor', 'detalle']
+    list_filter = ['fecha_devolucion']
+    search_fields = ['proveedor__nombre']
+    list_display = ['id','proveedor', 'fecha_devolucion', 'detalle']
+    inlines = [DetalleDevolucionPedidoProveedorInlinePersonal]
+
+    def save_formset(self, request, form, formset, change):
+        instances = formset.save(commit=False)
+        stocks = {}
+        for obj in formset.deleted_objects:
+            if obj.cantidad_devuelta  is None:
+                obj.cantidad_devuelta  = 0
+            producto = obj.producto
+            producto.stock += obj.cantidad_devuelta 
+            producto.save()
+            obj.delete()
+        for instance in instances:
+            if instance.cantidad_devuelta is None:
+                instance.cantidad_devuelta = 0
+            producto = instance.producto
+            stock_actual = stocks.get(producto)
+            if stock_actual:
+                stocks[producto] -= instance.cantidad_devuelta
+                producto.stock = stocks[producto]
+            else:
+                stocks[producto] = producto.stock
+                stocks[producto] -= instance.cantidad_devuelta
+                producto.stock = stocks[producto]
             producto.save()
             instance.save()
         formset.save_m2m()
@@ -496,7 +518,7 @@ class DetalleSalidaDotaciónPersonalInline(admin.TabularInline):
     min_num = 1
     show_change_link = False
 ##ADMIN
-class SalidaDotaciónPersonalAdmin(admin.ModelAdmin):
+class SalidaDotaciónPersonalAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     fields = ['solicitado_por','unidad','fecha']
     list_filter = ['fecha','unidad']
     search_fields = ['solicitado_por','unidad']
@@ -504,8 +526,27 @@ class SalidaDotaciónPersonalAdmin(admin.ModelAdmin):
     inlines = [DetalleSalidaDotaciónPersonalInline]
     actions = ['generar_pdf','generar_pdf_2']
 
+    # def save_formset(self, request, form, formset, change):
+    #     instances = formset.save(commit=False)
+    #     for obj in formset.deleted_objects:
+    #         if obj.cantidad is None:
+    #             obj.cantidad= 0
+    #         producto = obj.producto
+    #         producto.stock += obj.cantidad
+    #         producto.save()
+    #         obj.delete()
+    #     for instance in instances:
+    #         if instance.cantidad is None:
+    #             instance.cantidad = 0
+    #         producto = instance.producto
+    #         producto.stock -= instance.cantidad
+    #         producto.save()
+    #         instance.save()
+    #     formset.save_m2m()
+    
     def save_formset(self, request, form, formset, change):
         instances = formset.save(commit=False)
+        stocks = {}
         for obj in formset.deleted_objects:
             if obj.cantidad is None:
                 obj.cantidad= 0
@@ -517,7 +558,14 @@ class SalidaDotaciónPersonalAdmin(admin.ModelAdmin):
             if instance.cantidad is None:
                 instance.cantidad = 0
             producto = instance.producto
-            producto.stock -= instance.cantidad
+            stock_actual = stocks.get(producto)
+            if stock_actual:
+                stocks[producto] -= instance.cantidad
+                producto.stock = stocks[producto]
+            else:
+                stocks[producto] = producto.stock
+                stocks[producto] -= instance.cantidad
+                producto.stock = stocks[producto]
             producto.save()
             instance.save()
         formset.save_m2m()
