@@ -58,8 +58,7 @@ def exportEntregaPDF(request,**kwargs):
     encrypted_id = kwargs['pedido_id']
     pedido_id = SalidaDotacionPersonalFORM.decryptId(encrypted_id)
     solicitud= SalidaDotacionPersonalFORM.objects.get(pk=pedido_id)
-    entrega = DetalleSalidaDotaciónPersonal.objects.filter(salida_dotacion_personal=solicitud).raw('SELECT id,producto_id, SUM(cantidad) AS cantidad FROM railway.arcoiris_detallesalidadotaciónpersonal  WHERE salida_dotacion_personal_id LIKE %s GROUP BY producto_id ORDER BY cantidad'%(pedido_id))
-    kwargs['solicitud'] = solicitud
+    entrega = DetalleSalidaDotaciónPersonal.objects.filter(salida_dotacion_personal=solicitud)
     kwargs['entrega'] = entrega
    
 #    raw('SELECT id,producto_id, SUM(cantidad) AS cantidad FROM arcoiris_detallesalidadotaciónpersonal  WHERE salida_dotacion_personal_id LIKE %s GROUP BY producto_id ORDER BY cantidad'%(pedido_id))
