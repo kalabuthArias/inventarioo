@@ -53,30 +53,38 @@ def exportUsersPDF(request,**kwargs):
 
 def exportEntregaPDF(request,**kwargs):
     """Example of ExportPDF"""
-    
-    
     encrypted_id = kwargs['pedido_id']
     pedido_id = SalidaDotacionPersonalFORM.decryptId(encrypted_id)
+    # print(f'PEDIDO',{pedido_id})
     solicitud= SalidaDotacionPersonalFORM.objects.get(pk=pedido_id)
-    entrega = DetalleSalidaDotaciónPersonal.objects.filter(salida_dotacion_personal=solicitud)
+    # print(f'SOLICITUD',{solicitud})
+    entrega = DetalleSalidaDotaciónPersonal.objects.filter(salida_dotacion_personal=solicitud).values(productoo=F('producto__nombreElemento'),tallaa=F('producto__talla')).order_by('cantidad').annotate(cantidad=Sum('cantidad'))
+    # print(f'ENTREGA',{entrega})
     kwargs['entrega'] = entrega
-   
-#    raw('SELECT id,producto_id, SUM(cantidad) AS cantidad FROM arcoiris_detallesalidadotaciónpersonal  WHERE salida_dotacion_personal_id LIKE %s GROUP BY producto_id ORDER BY cantidad'%(pedido_id))
+
+# .values(productoo=F('producto__nombreElemento'),tallaa=F('producto__talla')).order_by('producto').annotate(cantidad=Sum('cantidad'))
+    
+#.raw('SELECT id,producto_id, SUM(cantidad) AS cantidad FROM arcoiris_detallesalidadotaciónpersonal  WHERE salida_dotacion_personal_id LIKE %s GROUP BY producto_id ORDER BY cantidad'%(pedido_id))
+    # for user in entrega:
+    #     print('USER',user)
+    #     users_list.append({
+    #         'cantidad': user.cantidad,
+    #         'producto': user.producto.nombreElemento,
+    #         'talla': user.producto.talla 
+    #     })
     users_list = []
     for user in entrega:
         users_list.append({
-            'cantidad': user.cantidad,
-            'producto': user.producto.nombreElemento,
-            'talla': user.producto.talla
-            
+            'cantidad': user['cantidad'],
+            'producto': user['productoo'],
+            'talla': user['tallaa']  
         })
-
+        
     soli_list=[{
       'solicitado': solicitud.solicitado_por,
       'unidad': solicitud.unidad,
       'fecha': solicitud.fecha}]
-   
-
+    
     data= {
         'entrega': users_list,
         'solicitud': soli_list
