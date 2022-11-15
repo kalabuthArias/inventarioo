@@ -57,19 +57,18 @@ def exportEntregaPDFFFF(request,**kwargs):
     encrypted_id = kwargs['pedido_id']
     pedido_id = SalidaDotacionPersonalFORMJimena.decryptId(encrypted_id)
     solicitud= SalidaDotacionPersonalFORMJimena.objects.get(pk=pedido_id)
-    entrega = DetalleSalidaDotaciónPersonalJimena.objects.filter(salida_dotacion_personal=solicitud).raw('SELECT id,producto_id, SUM(cantidad) AS cantidad FROM villaJimena_detallesalidadotaciónpersonalJimena  WHERE salida_dotacion_personal_id LIKE %s GROUP BY producto_id ORDER BY cantidad'%(pedido_id))
+    entrega = DetalleSalidaDotaciónPersonalJimena.objects.filter(salida_dotacion_personal=solicitud).values(productoo=F('producto__nombreElemento'),tallaa=F('producto__talla')).order_by('cantidad').annotate(cantidad=Sum('cantidad'))
     kwargs['solicitud'] = solicitud
     kwargs['entrega'] = entrega
    
     users_list = []
     for user in entrega:
         users_list.append({
-            'cantidad': user.cantidad,
-            'producto': user.producto.nombreElemento,
-            'talla': user.producto.talla
+            'cantidad': user['cantidad'],
+            'producto': user['productoo'],
+            'talla': user['tallaa']
             
         })
-
     soli_list=[{
       'solicitado': solicitud.solicitado_por,
       'unidad': solicitud.unidad,
